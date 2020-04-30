@@ -1,19 +1,18 @@
 FROM openjdk:8-slim
 
-LABEL Description="This image provides a base Android development environment for React Native, and may be used to run tests."
-LABEL maintainer="Héctor Ramos <hector@fb.com>"
+LABEL Description="This image provides a base Android development environment for React Native."
+LABEL maintainer="Corey Phillips <corey@ferrymanfin.com>"
 
 # set default build arguments
 ARG SDK_VERSION=sdk-tools-linux-3859397.zip
 ARG ANDROID_BUILD_VERSION=28
-ARG ANDROID_TOOLS_VERSION=28.0.2
+ARG ANDROID_TOOLS_VERSION=28.0.3
 ARG BUCK_VERSION=2018.10.29.01
 ARG NDK_VERSION=17c
 ARG WATCHMAN_VERSION=4.9.0
 
 # set default environment variables
 ENV ADB_INSTALL_TIMEOUT=10
-ENV PATH=${PATH}:/opt/buck/bin/
 ENV ANDROID_HOME=/opt/android
 ENV ANDROID_SDK_HOME=${ANDROID_HOME}
 ENV PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools
@@ -33,7 +32,7 @@ RUN apt-get update -qq \
         unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# install nodejs and yarn packages from nodesource and yarn apt sources
+# install nvm and yarn packages
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash \
     && export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")" && \. "$NVM_DIR/nvm.sh" \
     && nvm install 14.1.0 \
