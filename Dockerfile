@@ -32,14 +32,22 @@ RUN apt-get update -qq \
         unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# install nvm and yarn packages
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash \
-    && export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")" && \. "$NVM_DIR/nvm.sh" \
+ENV NVM_DIR $HOME/.nvm
+RUN mkdir -p $NVM_DIR \
+    && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash \
+    && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" >> $HOME/.bashrc \
+    && echo "source $NVM_DIR/nvm.sh" >> $HOME/.bashrc \
     && nvm install 14.1.0 \
-    && echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list \
+    && nvm alias default 14.1.0 \
+    && nvm use 14.1.0 \
+    && echo "source $HOME/.bashrc" >> $HOME/.bash_profile \
+    && echo "source $HOME/.bash_profile"
+
+# install nvm and yarn packages
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list \
     && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
     && apt-get update -qq \
-    && apt-get install -qq -y --no-install-recommends nodejs yarn \
+    && apt-get install -qq -y --no-install-recommends yarn \
     && rm -rf /var/lib/apt/lists/*
 
 # download and unpack NDK
